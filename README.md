@@ -55,9 +55,63 @@ public var answer = 42 // visible everywhere
 var anotherAnswer = 43 // compilation error: visibility modifier required
 ```
 
-### Eliminate Builtins
+### Eliminate Built-in Functions
 
-to be filled
+**Motivation**
+
+Built-in functions contribute to namespace pollution and require additional cognative load when making sure to avoid shadowing. Consider the following:
+```go
+func larger(a, b []string) []string {
+  len := len(a)
+  if len > len(b) { // compilation error: invalid operation: cannot call non-function len (variable of type int)
+     return a
+  }
+  return b
+}
+```
+To prevent shadowing of built-in functions we can simply convert them to keywords. However, a better solution would be to place them under a contextually oriented namespace when possible. This will both prevent the ability to override them and free those precious words to be used as safe variable names.
+
+**Solution**
+
+The following should be replaced:
+- `append` - will be available as a slice method instead (i.e. `slice.append(elems ...T)`).
+- `copy` - will be available as a slice method instead (i.e. `slice.copy(dst []T)`).
+- `delete` - will be available as a map method instead (i.e. `m.delete(key string)`).
+- `len` - will be available as methods of `array`, `slice`, `string` and `channel` (e.g. `slice.len()`).
+- `cap` - will be available as methods of `array`, `slice`, `string` and `channel` (e.g. `slice.cap()`).
+- `close` - will be available as a channel method instead (i.e. `channel.close()`).
+- `make` - will be available using as a standard library function instead (`goat.make`).
+- `complex` - will be available using as a standard library function instead (`goat.complex`).
+- `real` - will be available using as a standard library function instead (`goat.real`).
+- `imag` - will be available using as a standard library function instead (`goat.imag`).
+- `print` - will be available using as a standard library function instead (`goat.print`).
+- `println` - will be available using as a standard library function instead (`goat.println`).
+- `panic` - will be a keyword to prevent shadowing.
+- `recover` - will be a keyword to prevent shadowing.
+- `new` - will be a keyword to prevent shadowing.
+- `error` - will be a keyword to prevent shadowing.
+
+**Example**
+
+```go
+import "goat"
+
+func main() {
+  var slice = goat.make([]string)
+  slice = slice.append("a")
+  goat.println(slice.len())
+  goat.println(slice.cap())
+  var slice2 = goat.make([]string, 1)
+  slice.copy(slice2)
+
+  var m = map[string]string{"key": "value"}
+  m.delete("key")
+  
+  var ch = goat.make(chan bool)
+  ch.close()
+  panic("panic is a keyword")
+}
+```
 
 ### Strict Nil Checks
 
