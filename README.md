@@ -1,20 +1,21 @@
 # Goat
 
-Following the ideas presented in the Goat article series (link to be added soon),
-We've created this repository to start forging the specification of the Goat programming language.
+Goat - an extended flavor of the Go programming language, aiming for increased value safety and maintainability.
 
-The Goat syntax aspires to be as close as possible to Go's, with minor variations to provide better
-maintainability, safer runtime, and a better compile time experience.
+The motivation behind the Goat project is presented in a series of blog posts presenting the upsides and downsides of
+Golang and setting the scene for Goat.
 
-Goat specification is based on the premise of keeping things simple. We must comply with the very
-basic idea of Go: There shouldn't be more than one way of doing something. We do not wish to create
-new types of syntactical fragmentations in Go syntax. With this, each compile time or convention
-variation presented below should include the following:
-- Motivation (why do we absolutely need it?)
-- Solution (how will it work? will it preserve Go's simplicity?)
-- Examples
+Goat specification is based on the premise of keeping things simple. We must comply with a very
+basic idea of Go: **There shouldn't be more than one way to do something**. Our basic rule is to not create
+fragmentations in Goat syntax.
 
-## Compile Time Variations
+Goat implementation will most likely be delivered as a code generation tool or as a transpiler producing regular `go`
+files. However, full implementation details should be designed once the specification provided in this document
+is finalized.
+
+## Goat Specification
+
+Goat syntax and rules are similar to those in Go, with the exception of the proposals presented below.
 
 ### Visibility Modifiers
 
@@ -31,12 +32,12 @@ func main() {
   anotherUser := &user{name: "Jane"} // compilation error: user is not a type
 }
 ```
-In addition, the current visibility system of Go supports only two visibility modifiers - public and private. This prevents a more fine-grained control over visibility and produces another namespace polution problem - all symbols in a package are automatically visible from all other files. This creates highly cluttered package namespaces, especially in big packages and big projects.
+In addition, the current visibility system of Go supports only two visibility modifiers - public and private. This prevents a more fine-grained control over visibility and produces another namespace pollution problem - all symbols in a package are automatically visible from all other files. This creates highly cluttered package namespaces, especially in big packages and big projects.
 
 **Solution**
 
 Goat should support three visibility modifiers:
-- `private` - visibile only within the current file
+- `private` - visible only within the current file
 - `package` - visible only within the current package
 - `public` - visible everywhere
 
@@ -59,7 +60,7 @@ var anotherAnswer = 43 // compilation error: visibility modifier required
 
 **Motivation**
 
-Built-in functions contribute to namespace pollution and require additional cognative load when making sure to avoid shadowing. Consider the following:
+Built-in functions contribute to namespace pollution and require additional cognitive load when making sure to avoid shadowing. Consider the following:
 ```go
 func larger(a, b []string) []string {
   len := len(a)
@@ -96,7 +97,7 @@ The following should be replaced:
 ```go
 import "goat"
 
-func main() {
+private func main() {
   var slice = goat.make([]string)
   slice = slice.append("a")
   goat.println(slice.len())
@@ -115,40 +116,94 @@ func main() {
 
 ### Strict Nil Checks
 
-to be filled
+discussed in [this issue](https://github.com/goatlang/goat/issues/2).
 
 ### Enum Support
 
-to be filled
+**Motivation**
+
+Lacking direct support for enums in Go has several drawbacks:
+- No enforcement on valid values (example below)
+- No enforcement on exhaustive switch cases
+- No native support for iterating all possible values
+- No native support for converting to and from strings
+- No dedicated namespace for enum values (values are scattered between all other symbols in the package)
+
+```go
+type ConnectionStatus int
+
+const (
+  Idle ConnectionStatus = iota
+  Connecting
+  Ready
+)
+
+func main() {
+  var status ConnectionStatus = 46 // no compilation error
+}
+```
+
+**Solution**
+
+Introduce an `enum` type to resolve the problems presented above.
+
+**Example**
+
+```go
+public type ConnectionStatus enum {
+  Idle
+  Connecting
+  Ready
+}
+
+private func example() {
+  var status ConnectionStatus // zero value is ConnectionStatus.Idle
+  fmt.Println(status == ConnectionStatus.Idle) // true
+  status = ConnectionStatus.Connecting
+  status.String() // "Connecting"
+  ConnectionStatus.allValues() // []ConnectionStatus{ConnectionStatus.Idle, ConnectionStatus.Connecting, ConnectionStatus.Ready}
+  ConnectionStatus.fromString("Idle") // ConnectionStatus.Idle
+  status = 0 // compilation error: invalid enum value
+  switch status { // compilation error: non-exhaustive enum switch statement
+  case ConnectionStatus.Idle:
+   return  
+  }
+}
+```
 
 ### Struct Initial Values
 
-to be filled
+In some cases, structs may be more than simply a collection of variables, but rather, a concise entity with state and
+behavior. In such cases, it may be required for some fields to initially hold meaningful values and not simply their
+zero values. We might need to initialize int values to -1 rather than 0, or to 18, or to a calculated value derived
+from other values. Go does not provide any realistic approach to enforce initial state in structs.
+
+**Solution**
+
+Provide initial value capability to struct literals.
+
+**Example**
+
+discussed in [this issue](https://github.com/goatlang/goat/issues/1).
 
 ### Const Assignments
-- var
-- val
-- remove shorthand assignments
-- add ternary expression
-to be filled
+
+In most other use cases, assignment to a variable is a single-time operation. Const assignments allow for preventing
+accidental shadowing and accidental rewriting of variables, and also allow code authors to convey intent.
+
+discussed in [this issue](https://github.com/goatlang/goat/issues/3).
 
 ### Error Handling
 - add `?` operator
-to be filled
+  to be filled
 
 ### Promise
 - `go` keyword should return a promise
-to be filled
+  to be filled
 
-### Short Lambda Expression
+## Goat Conventions
 
-to be filled
-
-### Interface Field Support
-
-to be filled
-
-## Convention Variations
+Goat conventions are similar to those in Go, with the exception of the proposals presented below.
 
 ### Type Names Should Begin With Uppercase
 
@@ -160,9 +215,19 @@ to be filled
 
 ### Receiver Names
 - should be `self` by default
-to be filled
+  to be filled
 
 ### Error Types For Non Sentinel Errors
 
 to be filled
 
+## Contribution
+
+**Discussion** of ideas and proposals should be done via **issues**. Issues can relate to an existing proposal or a discussion
+of new proposals.
+
+**Modifications** to the spec should be done by submitting **pull requests** modifying this document with the required
+change. Each proposal should include:
+- Motivation (why do we absolutely need it?)
+- Solution (how will it work? will it preserve Go's simplicity?)
+- Examples
