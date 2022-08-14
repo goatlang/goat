@@ -1,6 +1,8 @@
 # Goat
 
-Goat - an extended flavor of the Go programming language, aiming for increased value safety and maintainability.
+<img align="right" alt="Goat Logo" src="https://raw.githubusercontent.com/goatlang/goat/main/goat-logo.svg" height="200">
+
+Extended flavor of the Go programming language, aiming for increased value safety and maintainability.
 
 The motivation behind the Goat project is presented in a series of blog posts presenting the upsides and downsides of
 Golang and setting the scene for Goat.
@@ -231,3 +233,10 @@ change. Each proposal should include:
 - Motivation (why do we absolutely need it?)
 - Solution (how will it work? will it preserve Go's simplicity?)
 - Examples
+
+<img alt="Goat Programming Language" src="https://raw.githubusercontent.com/goatlang/goat/main/goat.svg" height="300">
+
+### Original work / attributions
+
+The Go gopher eyes were designed by [Renee French](https://reneefrench.blogspot.com/).  
+Her design is licensed under the Creative Commons 3.0 Attributions license.
