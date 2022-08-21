@@ -1,5 +1,9 @@
 # Goat
 
+[![Issues](https://img.shields.io/github/issues/goatlang/goat?color=green&logo=github)](https://github.com/goatlang/goat/issues)
+[![License](https://img.shields.io/github/license/goatlang/goat)](https://github.com/goatlang/goat/blob/main/LICENSE)
+[![Commits](https://img.shields.io/github/last-commit/goatlang/goat?color=green&logo=github)](https://github.com/goatlang/goat/commits/main)
+
 <img align="right" alt="Goat Logo" src="https://raw.githubusercontent.com/goatlang/goat/main/goat-logo.svg" height="200">
 
 Extended flavor of the Go programming language, aiming for increased value safety and maintainability.
