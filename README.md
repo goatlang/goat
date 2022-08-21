@@ -15,6 +15,22 @@ Goat implementation will most likely be delivered as a code generation tool or a
 files. However, full implementation details should be designed once the specification provided in this document
 is finalized.
 
+* [Goat Specification](#goat-specification)
+    + [Visibility Modifiers](#visibility-modifiers)
+    + [Eliminate Built-in Functions](#eliminate-built-in-functions)
+    + [Strict Nil Checks](#strict-nil-checks)
+    + [Enum Support](#enum-support)
+    + [Struct Initial Values](#struct-initial-values)
+    + [Const Assignments](#const-assignments)
+    + [Error Handling](#error-handling)
+    + [Promises](#promises)
+* [Goat Conventions](#goat-conventions)
+    + [Type Names Should Begin With Uppercase](#type-names-should-begin-with-uppercase)
+    + [Lowercase Acronyms](#lowercase-acronyms)
+    + [Receiver Names](#receiver-names)
+    + [Error Types For Non Sentinel Errors](#error-types-for-non-sentinel-errors)
+* [Contribution](#contribution)
+
 ## Goat Specification
 
 Goat syntax and rules are similar to those in Go, with the exception of the proposals presented below.
@@ -196,12 +212,72 @@ accidental shadowing and accidental rewriting of variables, and also allow code 
 discussed in [this issue](https://github.com/goatlang/goat/issues/3).
 
 ### Error Handling
-- add `?` operator
-  to be filled
 
-### Promise
-- `go` keyword should return a promise
-  to be filled
+**Motivation**
+
+Following up on [this article](https://jesseduffield.com/Gos-Shortcomings-1/).
+
+**Solution**
+
+Error handling in Goat should support the `?` operator. It will not break Go's premise around error handling. Error handling will remain explicit and should not be avoided. Propagation of errors, if needed, may be shortened to `?` operator.
+
+**Example**
+
+```go
+func concat1() (string, error) {
+	data1, err := fetchURLData("example.com")
+	if err != nil {
+		return "", err
+	}
+	data2, err := fetchURLData("domain.com")
+	if err != nil {
+		return "", err
+	}
+	return data1 + data2, nil
+}
+
+func concat2() (string, error) {
+	data1 := fetchURLData("example.com")?
+	data2 := fetchURLData("domain.com")?
+	return data1 + data2, nil
+}
+
+func concat3() string {
+	data1 := fetchURLData("example.com")? // compilation error: function must return error
+	data2 := fetchURLData("domain.com")? // compilation error: function must return error
+	return data1 + data2, nil
+}
+
+func fetchURLData(url string) (string, error) {
+	// ...
+}
+```
+
+### Promises
+
+**Motivation**
+
+Following up on [this article](https://jesseduffield.com/Gos-Shortcomings-1/).
+
+**Solution**
+
+In Goat, the `go` keyword should return a promise.
+
+**Example**
+
+```go
+func fetchResourcesFromURLs(urls []string) ([]string, error) {
+  all := make([]promises.Promise[string], len(urls))
+  for i, url := range urls {
+     all[i] = go fetchResource(url)
+  }
+  return promises.All(all)
+}
+
+func fetchResource(url string) (string, error) {
+  // some I/O operation...
+}
+```
 
 ## Goat Conventions
 
@@ -209,19 +285,33 @@ Goat conventions are similar to those in Go, with the exception of the proposals
 
 ### Type Names Should Begin With Uppercase
 
-to be filled
+Go omits visibility modifier keywords (public, private, etc...) in favor of symbol naming. Symbols starting with an uppercase letter are automatically public and the rest are private. While this is great for simplicity, over time it's becoming clear that this method has a stronger downside than upside: In most other languages, type names, by convention, begin with an uppercase letter, and variable names begin with a lowercase one. This convention has a very powerful implication - it means that variables can never shadow types. Consider the following Go code:
+
+```go
+type user struct {
+  name string
+}
+
+func main() {
+  user := &user{name: "John"}
+  anotherUser := &user{name: "Jane"} // compilation error: user is not a type
+}
+```
+
+This is quite common in Go, whenever you store a private type into a private variable or a public type into a public variable - you run into this.
+To prevent is we should introduce visibility modifiers, but also make sure that by contentions, types start with uppercase letters and variables with lowercase ones.
 
 ### Lowercase Acronyms
 
-to be filled
+Acronyms in Go are [uppercase by convention](https://github.com/golang/go/wiki/CodeReviewComments#initialisms). This convention breaks readability and automatic tools when 2 or more acronyms are connected. For example - representing an HTTPS URL of some resource using the variable name `HTTPSURL` instead of `HttpsUrl`.
 
 ### Receiver Names
-- should be `self` by default
-  to be filled
+
+Following on [this article](https://jesseduffield.com/Gos-Shortcomings-5/#receiver-names), receiver names of a single letter are less meaningful and harder to maintain. There should be no problem with naming receiver variables `self`.
 
 ### Error Types For Non Sentinel Errors
 
-to be filled
+Non sentinel errors should never use `errors.New`, `fmt.Errorf`, or similar. Rather, they should *always* define a dedicated error type.
 
 ## Contribution
 
