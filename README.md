@@ -56,6 +56,8 @@ func main() {
 ```
 In addition, the current visibility system of Go supports only two visibility modifiers - public and private. This prevents a more fine-grained control over visibility and produces another namespace pollution problem - all symbols in a package are automatically visible from all other files. This creates highly cluttered package namespaces, especially in big packages and big projects.
 
+More context in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#9732).
+
 **Solution**
 
 Goat should support three visibility modifiers:
@@ -93,6 +95,8 @@ func larger(a, b []string) []string {
 }
 ```
 To prevent shadowing of built-in functions we can simply convert them to keywords. However, a better solution would be to place them under a contextually oriented namespace when possible. This will both prevent the ability to override them and free those precious words to be used as safe variable names.
+
+More context in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#cf6c).
 
 **Solution**
 
@@ -140,6 +144,8 @@ private func main() {
 
 discussed in [this issue](https://github.com/goatlang/goat/issues/2).
 
+More context in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#be7a).
+
 ### Enum Support
 
 **Motivation**
@@ -164,6 +170,8 @@ func main() {
   var status ConnectionStatus = 46 // no compilation error
 }
 ```
+
+More context in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#fcbd).
 
 **Solution**
 
@@ -200,6 +208,8 @@ behavior. In such cases, it may be required for some fields to initially hold me
 zero values. We might need to initialize int values to -1 rather than 0, or to 18, or to a calculated value derived
 from other values. Go does not provide any realistic approach to enforce initial state in structs.
 
+More context in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#0323).
+
 **Solution**
 
 Provide initial value capability to struct literals.
@@ -214,6 +224,8 @@ In most other use cases, assignment to a variable is a single-time operation. Co
 accidental shadowing and accidental rewriting of variables, and also allow code authors to convey intent.
 
 discussed in [this issue](https://github.com/goatlang/goat/issues/3).
+
+More context in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#f7da).
 
 ### Error Handling
 
@@ -261,7 +273,7 @@ func fetchURLData(url string) (string, error) {
 
 **Motivation**
 
-Following up on [this article](https://jesseduffield.com/Gos-Shortcomings-1/).
+Found in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#fe64).
 
 **Solution**
 
@@ -305,9 +317,13 @@ func main() {
 This is quite common in Go, whenever you store a private type into a private variable or a public type into a public variable - you run into this.
 To prevent is we should introduce visibility modifiers, but also make sure that by contentions, types start with uppercase letters and variables with lowercase ones.
 
+Found in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#9732).
+
 ### Lowercase Acronyms
 
 Acronyms in Go are [uppercase by convention](https://github.com/golang/go/wiki/CodeReviewComments#initialisms). This convention breaks readability and automatic tools when 2 or more acronyms are connected. For example - representing an HTTPS URL of some resource using the variable name `HTTPSURL` instead of `HttpsUrl`.
+
+Found in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#0dfa).
 
 ### Receiver Names
 
@@ -316,6 +332,8 @@ Following on [this article](https://jesseduffield.com/Gos-Shortcomings-5/#receiv
 ### Error Types For Non Sentinel Errors
 
 Non sentinel errors should never use `errors.New`, `fmt.Errorf`, or similar. Rather, they should *always* define a dedicated error type.
+
+Found in [this blog post section](https://medium.com/@avivcarmis/we-need-to-talk-about-the-bad-sides-of-go-568a1e5adbc6#cfb1).
 
 ## Contribution
 
