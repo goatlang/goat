@@ -60,12 +60,11 @@ More context in [this blog post section](https://medium.com/@avivcarmis/we-need-
 
 **Solution**
 
-Goat should support three visibility modifiers:
-- `private` - visible only within the current file
+Goat should support 2 visibility modifiers:
 - `package` - visible only within the current package
 - `public` - visible everywhere
 
-Each symbol declaration **must** contain a visibility modifier. Name casing will not affect visibility.
+Each symbol declaration **must** contain a visibility modifier, otherwise it will default to private. Name casing will not affect visibility.
 To prevent naming collisions, type names should be declared in upper case, and variables or functions should be declared in lower case.
 
 **Example**
