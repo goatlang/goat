@@ -70,13 +70,13 @@ To prevent naming collisions, type names should be declared in upper case, and v
 **Example**
 
 ```go
-private type User struct {} // visible only within the current file
+type User struct {} // visible only within the current file
 
 package func doSomething() {} // visible only within the current package
 
 public var answer = 42 // visible everywhere
 
-var anotherAnswer = 43 // compilation error: visibility modifier required
+var anotherAnswer = 43 // visible only within the current file
 ```
 
 ### Eliminate Built-in Functions
