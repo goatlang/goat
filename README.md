@@ -60,24 +60,23 @@ More context in [this blog post section](https://medium.com/@avivcarmis/we-need-
 
 **Solution**
 
-Goat should support three visibility modifiers:
-- `private` - visible only within the current file
+Goat should support 2 visibility modifiers:
 - `package` - visible only within the current package
 - `public` - visible everywhere
 
-Each symbol declaration **must** contain a visibility modifier. Name casing will not affect visibility.
+Each symbol declaration **must** contain a visibility modifier, otherwise it will default to private. Name casing will not affect visibility.
 To prevent naming collisions, type names should be declared in upper case, and variables or functions should be declared in lower case.
 
 **Example**
 
 ```go
-private type User struct {} // visible only within the current file
+type User struct {} // visible only within the current file
 
 package func doSomething() {} // visible only within the current package
 
 public var answer = 42 // visible everywhere
 
-var anotherAnswer = 43 // compilation error: visibility modifier required
+var anotherAnswer = 43 // visible only within the current file
 ```
 
 ### Eliminate Built-in Functions
